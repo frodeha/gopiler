@@ -7,7 +7,7 @@ import (
 
 func print(out io.Writer, tokens []Token) {
 	for _, token := range tokens {
-		fmt.Fprintf(out, "|%-20s| Len => %3d | Value => %s\n", tokenTypeToString(token.T), token.Size, token.Value)
+		fmt.Fprintf(out, "| Token %20s | Length %3d | Line %4d | Pos %3d | Value %s\n", tokenTypeToString(token.T), token.Size, token.Line, token.Pos, token.Value)
 	}
 }
 

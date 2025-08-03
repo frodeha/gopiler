@@ -46,119 +46,144 @@ type Token struct {
 	T     TokenType
 	Size  int
 	Value string
+	Line  int
+	Pos   int
 }
 
 func lex(s string) ([]Token, error) {
-	var tokens []Token
+	var (
+		idx   = 0
+		runes = []rune(s)
 
-	bytes := []rune(s)
-	idx := 0
+		line = 1
+		pos  = 1
+	)
 
 	readWhile := func(p func(b rune) bool) (string, int) {
 		start := idx
 		end := idx
 
-		for end < len(bytes) && p(bytes[end]) {
+		for end < len(runes) && p(runes[end]) {
 			end++
 		}
 
-		return string(bytes[start:end]), end - start
+		return string(runes[start:end]), end - start
 	}
 
+	var tokens []Token
 	for {
-		if idx >= len(bytes) {
+		if idx >= len(runes) {
 			break
 		}
 
-		b := bytes[idx]
-		if isWhitespace(b) {
+		r := runes[idx]
+		if isWhitespace(r) {
+			if isNewline(r) {
+				line += 1
+				pos = 1
+			} else {
+				// Jikes...
+				if r == '\t' {
+					pos += 4
+				} else {
+					pos += 1
+				}
+			}
+
 			idx++
 			continue
 		}
 
 		var token Token
 		switch {
-		case isLetter(b):
-			ident, len := readWhile(isAlphaNumOrUnderscore)
-			token = Token{T: STRING, Size: len, Value: ident}
-		case isNumber(b):
+		case isLetter(r):
+			s, len := readWhile(isAlphaNumOrUnderscore)
+			token = Token{T: STRING, Size: len, Value: s}
+		case isNumber(r):
 			num, len := readWhile(isNumber)
 			token = Token{T: NUMBER, Size: len, Value: num}
-		case b == '{':
-			token = Token{T: LEFT_CURLY_BRACKET, Size: 1, Value: string(b)}
-		case b == '}':
-			token = Token{T: RIGHT_CURLY_BRACKET, Size: 1, Value: string(b)}
-		case b == '(':
-			token = Token{T: LEFT_PARENTHESIS, Size: 1, Value: string(b)}
-		case b == ')':
-			token = Token{T: RIGHT_PARENTHESIS, Size: 1, Value: string(b)}
-		case b == '[':
-			token = Token{T: LEFT_ANGLE_BRACKET, Size: 1, Value: string(b)}
-		case b == ']':
-			token = Token{T: RIGHT_ANGLE_BRACKET, Size: 1, Value: string(b)}
-		case b == ':':
-			token = Token{T: COLON, Size: 1, Value: string(b)}
-		case b == ';':
-			token = Token{T: SEMICOLON, Size: 1, Value: string(b)}
-		case b == '=':
-			token = Token{T: EQUALS, Size: 1, Value: string(b)}
-		case b == '+':
-			token = Token{T: CROSS, Size: 1, Value: string(b)}
-		case b == '-':
-			token = Token{T: HYPHEN, Size: 1, Value: string(b)}
-		case b == '_':
-			token = Token{T: UNDERSCORE, Size: 1, Value: string(b)}
-		case b == '*':
-			token = Token{T: ASTERISK, Size: 1, Value: string(b)}
-		case b == '"':
-			token = Token{T: QUOTE, Size: 1, Value: string(b)}
-		case b == '/':
-			token = Token{T: SLASH, Size: 1, Value: string(b)}
-		case b == '\\':
-			token = Token{T: BACKSLASH, Size: 1, Value: string(b)}
-		case b == ',':
-			token = Token{T: COMMA, Size: 1, Value: string(b)}
-		case b == '<':
-			token = Token{T: LESS, Size: 1, Value: string(b)}
-		case b == '>':
-			token = Token{T: GREATER, Size: 1, Value: string(b)}
-		case b == '`':
-			token = Token{T: BACKTICK, Size: 1, Value: string(b)}
-		case b == '\'':
-			token = Token{T: TICK, Size: 1, Value: string(b)}
-		case b == '&':
-			token = Token{T: AMPERSAND, Size: 1, Value: string(b)}
-		case b == '.':
-			token = Token{T: PERIOD, Size: 1, Value: string(b)}
-		case b == '%':
-			token = Token{T: PERCENTAGE, Size: 1, Value: string(b)}
-		case b == '|':
-			token = Token{T: PIPE, Size: 1, Value: string(b)}
+		case r == '{':
+			token = Token{T: LEFT_CURLY_BRACKET, Size: 1, Value: string(r)}
+		case r == '}':
+			token = Token{T: RIGHT_CURLY_BRACKET, Size: 1, Value: string(r)}
+		case r == '(':
+			token = Token{T: LEFT_PARENTHESIS, Size: 1, Value: string(r)}
+		case r == ')':
+			token = Token{T: RIGHT_PARENTHESIS, Size: 1, Value: string(r)}
+		case r == '[':
+			token = Token{T: LEFT_ANGLE_BRACKET, Size: 1, Value: string(r)}
+		case r == ']':
+			token = Token{T: RIGHT_ANGLE_BRACKET, Size: 1, Value: string(r)}
+		case r == ':':
+			token = Token{T: COLON, Size: 1, Value: string(r)}
+		case r == ';':
+			token = Token{T: SEMICOLON, Size: 1, Value: string(r)}
+		case r == '=':
+			token = Token{T: EQUALS, Size: 1, Value: string(r)}
+		case r == '+':
+			token = Token{T: CROSS, Size: 1, Value: string(r)}
+		case r == '-':
+			token = Token{T: HYPHEN, Size: 1, Value: string(r)}
+		case r == '_':
+			token = Token{T: UNDERSCORE, Size: 1, Value: string(r)}
+		case r == '*':
+			token = Token{T: ASTERISK, Size: 1, Value: string(r)}
+		case r == '"':
+			token = Token{T: QUOTE, Size: 1, Value: string(r)}
+		case r == '/':
+			token = Token{T: SLASH, Size: 1, Value: string(r)}
+		case r == '\\':
+			token = Token{T: BACKSLASH, Size: 1, Value: string(r)}
+		case r == ',':
+			token = Token{T: COMMA, Size: 1, Value: string(r)}
+		case r == '<':
+			token = Token{T: LESS, Size: 1, Value: string(r)}
+		case r == '>':
+			token = Token{T: GREATER, Size: 1, Value: string(r)}
+		case r == '`':
+			token = Token{T: BACKTICK, Size: 1, Value: string(r)}
+		case r == '\'':
+			token = Token{T: TICK, Size: 1, Value: string(r)}
+		case r == '&':
+			token = Token{T: AMPERSAND, Size: 1, Value: string(r)}
+		case r == '.':
+			token = Token{T: PERIOD, Size: 1, Value: string(r)}
+		case r == '%':
+			token = Token{T: PERCENTAGE, Size: 1, Value: string(r)}
+		case r == '|':
+			token = Token{T: PIPE, Size: 1, Value: string(r)}
 		default:
-			_fatal(fmt.Errorf("unexpected byte: %s", string(b)))
+			_fatal(fmt.Errorf("unexpected rune: %s", string(r)))
 		}
 		_assert(token.Size > 0, "unexpected TokenType(%d) = %s with zero size", token.T, token.Value)
 
+		token.Line = line
+		token.Pos = pos
 		tokens = append(tokens, token)
-		idx += token.Size
 
+		idx += token.Size
+		pos += token.Size
 	}
 
 	return tokens, nil
 }
 
-func isAlphaNumOrUnderscore(b rune) bool {
-	return isLetter(b) || isNumber(b) || b == '_'
+func isAlphaNumOrUnderscore(r rune) bool {
+	return isLetter(r) || isNumber(r) || r == '_'
 }
 
-func isLetter(b rune) bool {
-	return unicode.IsLetter(b)
+func isLetter(r rune) bool {
+	return unicode.IsLetter(r)
 }
 
-func isNumber(b rune) bool {
-	return unicode.IsNumber(b)
+func isNumber(r rune) bool {
+	return unicode.IsNumber(r)
 }
 
-func isWhitespace(b rune) bool {
-	return unicode.IsSpace(b)
+func isWhitespace(r rune) bool {
+	return unicode.IsSpace(r)
+}
+
+func isNewline(r rune) bool {
+	return r == '\n'
 }
