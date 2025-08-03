@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"unicode"
 )
 
 type TokenType int
 
 const (
-	WORD TokenType = iota
+	STRING TokenType = iota
 	NUMBER
 
 	LEFT_PARENTHESIS
@@ -50,10 +51,10 @@ type Token struct {
 func lex(s string) ([]Token, error) {
 	var tokens []Token
 
-	bytes := []byte(s)
+	bytes := []rune(s)
 	idx := 0
 
-	readWhile := func(p func(b byte) bool) (string, int) {
+	readWhile := func(p func(b rune) bool) (string, int) {
 		start := idx
 		end := idx
 
@@ -79,7 +80,7 @@ func lex(s string) ([]Token, error) {
 		switch {
 		case isLetter(b):
 			ident, len := readWhile(isAlphaNumOrUnderscore)
-			token = Token{T: WORD, Size: len, Value: ident}
+			token = Token{T: STRING, Size: len, Value: ident}
 		case isNumber(b):
 			num, len := readWhile(isNumber)
 			token = Token{T: NUMBER, Size: len, Value: num}
@@ -146,21 +147,18 @@ func lex(s string) ([]Token, error) {
 	return tokens, nil
 }
 
-func isAlphaNumOrUnderscore(b byte) bool {
+func isAlphaNumOrUnderscore(b rune) bool {
 	return isLetter(b) || isNumber(b) || b == '_'
 }
 
-func isLetter(b byte) bool {
-	// A = 65,  z = 122
-	return (b >= 65 && b <= 90) || (b >= 97 && b <= 122)
+func isLetter(b rune) bool {
+	return unicode.IsLetter(b)
 }
 
-func isNumber(b byte) bool {
-	// 0 = 48, 9 == 57
-	return b >= 48 && b <= 57
+func isNumber(b rune) bool {
+	return unicode.IsNumber(b)
 }
 
-func isWhitespace(b byte) bool {
-	// " " = 32,  \t == 9,  \n 10
-	return b == 32 || b == 9 || b == 10
+func isWhitespace(b rune) bool {
+	return unicode.IsSpace(b)
 }

@@ -13,8 +13,8 @@ func print(out io.Writer, tokens []Token) {
 
 func tokenTypeToString(t TokenType) string {
 	switch t {
-	case WORD:
-		return "WORD"
+	case STRING:
+		return "STRING"
 	case NUMBER:
 		return "NUMBER"
 	case LEFT_PARENTHESIS:
