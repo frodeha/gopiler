@@ -153,7 +153,7 @@ func lex(s string) ([]Token, error) {
 		case r == '|':
 			token = Token{T: PIPE, Size: 1, Value: string(r)}
 		default:
-			_fatal(fmt.Errorf("unexpected rune: %s", string(r)))
+			return nil, fmt.Errorf("unexpected rune: %s", string(r))
 		}
 		_assert(token.Size > 0, "unexpected TokenType(%d) = %s with zero size", token.T, token.Value)
 
