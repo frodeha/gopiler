@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"gopiler/lexer"
 	"os"
 )
 
@@ -14,10 +15,20 @@ func main() {
 	bytes, err := os.ReadFile(os.Args[1])
 	_fatal(err)
 
-	tokens, err := lex(string(bytes))
-	_fatal(err)
+	_lexer := lexer.NewFromString(string(bytes))
+	for {
+		token, err := _lexer.Next()
+		if err == lexer.ErrEOF {
+			break
+		}
 
-	print(os.Stdout, tokens)
+		if err != nil {
+			fmt.Printf("[Error] %s", err)
+			return
+		}
+
+		print(os.Stdout, token)
+	}
 }
 
 func _fatal(err error) {

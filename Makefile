@@ -4,7 +4,7 @@
 scratchpad: build ## Compile the scratchpad.go file
 	$(build_target) ./debug/scratchpad
 
-programs_dir=./programs
+programs_dir=./test/programs
 simple: build ## Compile the simple program
 	$(build_target) $(programs_dir)/simple.go
 

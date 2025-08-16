@@ -1,0 +1,47 @@
+package lexer
+
+type Token struct {
+	T     TokenType
+	Size  int
+	Value string
+	Line  int
+	Pos   int
+}
+
+type TokenType int
+
+const (
+	NONE TokenType = iota
+
+	IDENTIFIER
+	STRING
+	NUMBER
+
+	PACKAGE
+	STRUCT
+	INTERFACE
+	TYPE
+	RETURN
+	FUNC
+	IF
+	FOR
+	VAR
+	NIL
+	DECLARE_INITIALIZE
+	ASSIGN
+	UNDERSCORE
+
+	LEFT_PARENTHESIS
+	RIGHT_PARENTHESIS
+	LEFT_CURLY_BRACKET
+	RIGHT_CURLY_BRACKET
+	LEFT_ANGLE_BRACKET
+	RIGHT_ANGLE_BRACKET
+
+	INT
+
+	ADD
+	SUBTRACT
+	MULTIPLY_ASTERISK
+	DIVIDE
+)
