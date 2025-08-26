@@ -181,7 +181,7 @@ func (l *Lexer) captureWhile(p func(b rune) bool) (string, int) {
 }
 
 func (l *Lexer) consumeN(n int) {
-	for idx := 0; idx < n; idx++ {
+	for range n {
 		l.consume()
 	}
 }

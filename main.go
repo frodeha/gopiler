@@ -16,6 +16,8 @@ func main() {
 	_fatal(err)
 
 	_lexer := lexer.NewFromString(string(bytes))
+	parse(_lexer)
+	return
 	for {
 		token, err := _lexer.Next()
 		if err == lexer.ErrEOF {
