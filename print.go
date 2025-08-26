@@ -54,6 +54,8 @@ func tokenTypeToString(t lexer.TokenType) string {
 		return "ASSIGN"
 	case lexer.INT:
 		return "INT"
+	case lexer.ERROR:
+		return "ERROR"
 	case lexer.RETURN:
 		return "RETURN"
 	case lexer.NIL:

@@ -144,6 +144,7 @@ var keywords = map[string]TokenType{
 	"type":      TYPE,
 	"struct":    STRUCT,
 	"interface": INTERFACE,
+	"error":     ERROR,
 }
 
 func (l *Lexer) peek() (rune, bool) {

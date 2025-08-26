@@ -22,6 +22,7 @@ const (
 	INTERFACE
 	TYPE
 	RETURN
+	ERROR
 	FUNC
 	IF
 	FOR
